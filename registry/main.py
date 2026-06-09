@@ -2,6 +2,7 @@
 
 import logging
 import os
+import requests
 from datetime import datetime
 from typing import Optional
 
@@ -117,8 +118,47 @@ def chat(request: dict):
     question = request.get("question", "").strip()
     if not question:
         raise HTTPException(status_code=400, detail="question is required")
-    answer = orchestrate(question)
-    return {"answer": answer}
+    result = orchestrate(question)
+    # result can be a plain string or a confirm dict
+    if isinstance(result, dict):
+        return result  # type="confirm" — frontend shows modal
+    return {"answer": result}
+
+
+@app.post("/chat/execute")
+def chat_execute(request: dict):
+    """Execute a confirmed write action and return the result."""
+    method = request.get("method", "POST").upper()
+    endpoint = request.get("endpoint", "").strip()
+    body = request.get("body") or {}
+    if not endpoint:
+        raise HTTPException(status_code=400, detail="endpoint is required")
+    # Guard: reject if endpoint still has unresolved path parameters
+    import re
+    unresolved = re.findall(r"\{[^}]+\}", endpoint)
+    if unresolved:
+        return {"answer": f"❌ Action failed: endpoint URL has unresolved path parameters: {unresolved}. Please specify the exact ID/value."}
+    try:
+        if method == "POST":
+            resp = requests.post(endpoint, json=body, timeout=10)
+        elif method == "PATCH":
+            resp = requests.patch(endpoint, json=body, timeout=10)
+        elif method == "PUT":
+            resp = requests.put(endpoint, json=body, timeout=10)
+        elif method == "DELETE":
+            resp = requests.delete(endpoint, timeout=10)
+        else:
+            raise HTTPException(status_code=400, detail=f"Unsupported method: {method}")
+        resp.raise_for_status()
+        try:
+            data = resp.json()
+        except Exception:
+            data = {"message": resp.text}
+        return {"answer": f"✅ Done! Here is the result:\n\n```json\n{__import__('json').dumps(data, indent=2)}\n```"}
+    except requests.HTTPError as exc:
+        return {"answer": f"❌ Action failed: HTTP {exc.response.status_code} — {exc.response.text}"}
+    except Exception as exc:
+        return {"answer": f"❌ Action failed: {exc}"}
 
 
 @app.get("/health")

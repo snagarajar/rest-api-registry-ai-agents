@@ -51,6 +51,7 @@
                         <span class="api-name">${a.name}</span>
                         <span class="api-team">${a.owner_team}</span>
                         <span class="api-method method-${a.method.toLowerCase()}">${a.method}</span>
+                        <button onclick="deregisterApi('${a.api_id}', '${a.name.replace(/'/g, "\\'")}', this)" style="margin-left:auto; padding:4px 12px; font-size:12px; border-radius:12px; border:1px solid #fce4ec; background:#fff; color:#c62828; cursor:pointer;">🗑 Deregister</button>
                     </div>
                     <div class="api-desc">${a.description}</div>
                     <div class="api-meta">
@@ -72,6 +73,21 @@
         });
 
         loadApis();
+
+        async function deregisterApi(apiId, apiName, btn) {
+            if (!confirm(`Remove "${apiName}" from the registry?`)) return;
+            btn.disabled = true;
+            btn.textContent = "Removing…";
+            const resp = await fetch(`/registry/api/${apiId}`, { method: 'DELETE' });
+            if (resp.ok) {
+                allApis = allApis.filter(a => a.api_id !== apiId);
+                renderApis(allApis);
+            } else {
+                alert("Failed to deregister API.");
+                btn.disabled = false;
+                btn.textContent = "🗑 Deregister";
+            }
+        }
     </script>
     <style>
         .api-card {

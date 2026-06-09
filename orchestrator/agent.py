@@ -3,7 +3,7 @@
 import json
 import logging
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import boto3
 import requests
@@ -41,7 +41,7 @@ def query_registry(query: str) -> list:
 
 
 def call_api(endpoint: str, params: Optional[dict] = None) -> dict:
-    """Invoke a registered REST API endpoint."""
+    """Invoke a registered REST API endpoint (GET only)."""
     logger.info("[tool] call_api: %s params=%s", endpoint, params)
     try:
         resp = requests.get(endpoint, params=params or {}, timeout=10)
@@ -67,18 +67,17 @@ def _execute_tool(tool_name: str, tool_input: dict) -> str:
 
 # ─── Orchestrator ─────────────────────────────────────────────────────────────
 
-def orchestrate(user_question: str) -> str:
+def orchestrate(user_question: str) -> Union[str, dict]:
     """
-    Run the Claude agent loop:
-    - Send user question
-    - Handle tool_use calls until Claude returns end_turn
-    - Return Claude's final text answer
+    Run the Claude agent loop.
+    - Returns a string for normal answers.
+    - Returns a dict with type="confirm" when Claude wants to perform a write operation.
     """
     logger.info("Orchestrating: %s", user_question)
 
     messages = [{"role": "user", "content": [{"text": user_question}]}]
 
-    for iteration in range(20):  # increased cap; prompt instructs Claude to stop early
+    for iteration in range(20):
         response = bedrock.converse(
             modelId=MODEL_ID,
             messages=messages,
@@ -104,6 +103,18 @@ def orchestrate(user_question: str) -> str:
             for block in assistant_message["content"]:
                 if "toolUse" in block:
                     tool_use = block["toolUse"]
+
+                    # ── confirm_action: pause and return to frontend ──────────
+                    if tool_use["name"] == "confirm_action":
+                        inp = tool_use["input"]
+                        return {
+                            "type": "confirm",
+                            "description": inp.get("description", "Perform this action?"),
+                            "method": inp.get("method", "POST"),
+                            "endpoint": inp.get("endpoint", ""),
+                            "body": inp.get("body", {}),
+                        }
+
                     tool_result_content = _execute_tool(tool_use["name"], tool_use["input"])
                     tool_results.append({
                         "toolResult": {

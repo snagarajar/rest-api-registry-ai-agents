@@ -1,10 +1,8 @@
 """Manufacturing API — Instrument Status & Fab Capacity (port 8004)."""
 
 import logging
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mock_apis.utils import auto_register
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -26,32 +24,7 @@ FAB_CAPACITY = {
 }
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    auto_register({
-        "name": "Get Instrument Status",
-        "description": "Query instrument availability, capacity, and next maintenance window",
-        "endpoint": "http://localhost:8004/manufacturing/instrument",
-        "method": "GET",
-        "parameters": ["name"],
-        "owner_team": "Manufacturing Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    auto_register({
-        "name": "Get Fab Capacity",
-        "description": "Query fabrication site total and available production capacity",
-        "endpoint": "http://localhost:8004/manufacturing/capacity",
-        "method": "GET",
-        "parameters": ["fab"],
-        "owner_team": "Manufacturing Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    yield
-
-
-app = FastAPI(title="Manufacturing API", lifespan=lifespan)
+app = FastAPI(title="Manufacturing API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

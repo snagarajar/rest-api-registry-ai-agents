@@ -1,10 +1,8 @@
 """LIMS API — Work Orders & Bead Pools (port 8001)."""
 
 import logging
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mock_apis.utils import auto_register
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -29,32 +27,7 @@ BEAD_POOLS = {
 }
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    auto_register({
-        "name": "Get Work Order",
-        "description": "Fetch work order details and production status from LIMS",
-        "endpoint": "http://localhost:8001/lims/workorder",
-        "method": "GET",
-        "parameters": ["id"],
-        "owner_team": "LIMS Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    auto_register({
-        "name": "Get Bead Pool",
-        "description": "Fetch bead pool inventory and quality grade from LIMS",
-        "endpoint": "http://localhost:8001/lims/bead-pool",
-        "method": "GET",
-        "parameters": ["id"],
-        "owner_team": "LIMS Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    yield
-
-
-app = FastAPI(title="LIMS API", lifespan=lifespan)
+app = FastAPI(title="LIMS API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

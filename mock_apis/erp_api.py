@@ -1,10 +1,8 @@
 """ERP API — Inventory & Procurement (port 8002)."""
 
 import logging
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mock_apis.utils import auto_register
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -29,32 +27,7 @@ PROCUREMENT = {
 }
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    auto_register({
-        "name": "Check Inventory",
-        "description": "Query current inventory levels and warehouse locations from ERP",
-        "endpoint": "http://localhost:8002/erp/inventory",
-        "method": "GET",
-        "parameters": ["product"],
-        "owner_team": "ERP Team",
-        "auth_type": "api_key",
-        "dependencies": [],
-    })
-    auto_register({
-        "name": "Check Procurement",
-        "description": "Query pending procurement orders and next delivery dates from ERP",
-        "endpoint": "http://localhost:8002/erp/procurement",
-        "method": "GET",
-        "parameters": ["product"],
-        "owner_team": "ERP Team",
-        "auth_type": "api_key",
-        "dependencies": [],
-    })
-    yield
-
-
-app = FastAPI(title="ERP API", lifespan=lifespan)
+app = FastAPI(title="ERP API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

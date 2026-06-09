@@ -1,10 +1,8 @@
 """Genomics API — Quality Checks & Assay Status (port 8003)."""
 
 import logging
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mock_apis.utils import auto_register
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -32,32 +30,7 @@ ASSAYS = {
 }
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    auto_register({
-        "name": "Run Quality Check",
-        "description": "Validate quality metrics, defect rates, and concordance for a product",
-        "endpoint": "http://localhost:8003/genomics/qc",
-        "method": "GET",
-        "parameters": ["product"],
-        "owner_team": "Genomics Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    auto_register({
-        "name": "Get Assay Status",
-        "description": "Retrieve genomics assay run status, variant count, and confidence",
-        "endpoint": "http://localhost:8003/genomics/assay-status",
-        "method": "GET",
-        "parameters": ["assay_id"],
-        "owner_team": "Genomics Team",
-        "auth_type": "none",
-        "dependencies": [],
-    })
-    yield
-
-
-app = FastAPI(title="Genomics API", lifespan=lifespan)
+app = FastAPI(title="Genomics API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

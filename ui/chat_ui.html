@@ -25,11 +25,12 @@
                 <div class="msg-body">Hello! I can query any registered API to answer your questions. Try one of the examples below, or ask your own.</div>
             </div>
             <div class="suggestions">
-                <button class="chip" onclick="ask('Can we fulfill work order WO-1234?')">Can we fulfill WO-1234?</button>
-                <button class="chip" onclick="ask('What is the status of assay run ASY-001?')">Status of assay ASY-001?</button>
-                <button class="chip" onclick="ask('Do we have enough BeadChip inventory?')">BeadChip inventory?</button>
-                <button class="chip" onclick="ask('What is the current fab capacity?')">Fab capacity?</button>
-                <button class="chip" onclick="ask('Is there any bottleneck between inventory and fab capacity right now?')">Any bottlenecks?</button>
+                <button class="chip" onclick="ask('Show me all lab orders')">Show all lab orders</button>
+                <button class="chip" onclick="ask('What inventory items are low on stock?')">Low stock items?</button>
+                <button class="chip" onclick="ask('List all pending invoices')">Pending invoices?</button>
+                <button class="chip" onclick="ask('Show me all active products')">Active products?</button>
+                <button class="chip" onclick="ask('Create a new lab order for 20 blood samples with WGS assay, requester Dr. Singh, priority urgent')">Create lab order</button>
+                <button class="chip" onclick="ask('Mark invoice INV-001 as paid')">Mark invoice paid</button>
             </div>
         </div>
 
@@ -39,5 +40,25 @@
         </div>
     </div>
     <script src="/static/script.js"></script>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:16px; padding:28px 32px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+            <h3 style="margin:0 0 12px; font-size:17px; color:#2d2d2d;">⚡ Confirm Action</h3>
+            <p id="confirm-description" style="margin:0 0 16px; font-size:14px; color:#444; line-height:1.5;"></p>
+            <details style="margin-bottom:18px; font-size:13px; color:#666;">
+                <summary style="cursor:pointer; font-weight:600;">Technical details</summary>
+                <div style="margin-top:8px; background:#f5f5f5; padding:10px 12px; border-radius:8px;">
+                    <div><strong>Method:</strong> <span id="confirm-method"></span></div>
+                    <div><strong>Endpoint:</strong> <code id="confirm-endpoint" style="word-break:break-all;"></code></div>
+                    <div id="confirm-body-row"><strong>Body:</strong> <pre id="confirm-body" style="margin:4px 0 0; overflow-x:auto;"></pre></div>
+                </div>
+            </details>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="cancelConfirm()" style="padding:9px 20px; border-radius:20px; border:1px solid #dde1f0; background:white; cursor:pointer; font-size:14px;">Cancel</button>
+                <button onclick="executeConfirmed()" style="padding:9px 20px; border-radius:20px; border:none; background:linear-gradient(135deg,#667eea,#764ba2); color:white; cursor:pointer; font-size:14px; font-weight:600;">✓ Confirm</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

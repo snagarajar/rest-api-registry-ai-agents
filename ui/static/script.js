@@ -1,5 +1,8 @@
 /* ── Chat UI ─────────────────────────────────────────── */
 
+// Stores pending confirm action details
+let _pendingConfirm = null;
+
 function ask(question) {
     document.getElementById("user-input").value = question;
     sendMessage();
@@ -29,13 +32,60 @@ function sendMessage() {
     .then(r => r.json())
     .then(data => {
         removeMessage(loadingId);
-        addAgentMessage(data.answer || data.error || "No response.");
+        if (data.type === "confirm") {
+            showConfirmModal(data);
+        } else {
+            addAgentMessage(data.answer || data.error || "No response.");
+        }
     })
     .catch(err => {
         removeMessage(loadingId);
         addAgentMessage("⚠️ Error: " + err.message);
     })
     .finally(() => { sendBtn.disabled = false; input.focus(); });
+}
+
+function showConfirmModal(data) {
+    _pendingConfirm = data;
+    document.getElementById("confirm-description").textContent = data.description;
+    document.getElementById("confirm-method").textContent = data.method;
+    document.getElementById("confirm-endpoint").textContent = data.endpoint;
+    const body = data.body && Object.keys(data.body).length > 0
+        ? JSON.stringify(data.body, null, 2)
+        : "(none)";
+    document.getElementById("confirm-body").textContent = body;
+    const modal = document.getElementById("confirm-modal");
+    modal.style.display = "flex";
+}
+
+function cancelConfirm() {
+    _pendingConfirm = null;
+    document.getElementById("confirm-modal").style.display = "none";
+    addAgentMessage("❌ Action cancelled.");
+}
+
+function executeConfirmed() {
+    if (!_pendingConfirm) return;
+    document.getElementById("confirm-modal").style.display = "none";
+
+    const loadingId = addLoadingMessage();
+    const payload   = _pendingConfirm;
+    _pendingConfirm = null;
+
+    fetch("/chat/execute", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
+    })
+    .then(r => r.json())
+    .then(data => {
+        removeMessage(loadingId);
+        addAgentMessage(data.answer || "Done.");
+    })
+    .catch(err => {
+        removeMessage(loadingId);
+        addAgentMessage("⚠️ Execute error: " + err.message);
+    });
 }
 
 function addUserMessage(text) {
@@ -110,7 +160,7 @@ if (regForm) {
         const status = document.getElementById("status-message");
 
         if (resp.ok) {
-            status.innerHTML = `<p style="color:green">✓ Registered! ID: <strong>${result.api_id}</strong></p>`;
+            status.innerHTML = `<p style="color:green">✓ <strong>${payload.name}</strong> registered successfully!</p>`;
             f.reset();
         } else {
             status.innerHTML = `<p style="color:red">✗ Failed: ${JSON.stringify(result)}</p>`;
