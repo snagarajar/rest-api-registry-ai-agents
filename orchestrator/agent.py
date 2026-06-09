@@ -78,13 +78,13 @@ def orchestrate(user_question: str) -> str:
 
     messages = [{"role": "user", "content": [{"text": user_question}]}]
 
-    for iteration in range(10):  # safety cap to prevent infinite loops
+    for iteration in range(20):  # increased cap; prompt instructs Claude to stop early
         response = bedrock.converse(
             modelId=MODEL_ID,
             messages=messages,
             system=[{"text": SYSTEM_PROMPT}],
             toolConfig={"tools": TOOLS},
-            inferenceConfig={"maxTokens": 2048, "temperature": 0},
+            inferenceConfig={"maxTokens": 4096, "temperature": 0},
         )
 
         stop_reason = response["stopReason"]

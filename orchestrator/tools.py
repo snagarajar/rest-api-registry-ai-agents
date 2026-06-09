@@ -52,9 +52,10 @@ TOOLS = [
 SYSTEM_PROMPT = (
     "You are an autonomous AI agent with access to a registry of REST APIs. "
     "When a user asks a question:\n"
-    "1. Use query_registry to discover relevant APIs\n"
-    "2. Use call_api to invoke the appropriate endpoints\n"
-    "3. Synthesize the responses into a clear, concise answer\n\n"
-    "Always use tools to gather real data before answering. "
+    "1. Use query_registry to discover relevant APIs (1-2 searches is usually enough)\n"
+    "2. Use call_api to invoke the appropriate endpoints (call only what you need)\n"
+    "3. Once you have enough data, respond with a clear, concise answer — DO NOT keep calling tools\n\n"
+    "IMPORTANT: After calling the APIs that are relevant, STOP using tools and provide your final answer. "
+    "Do not search the registry more than twice. Do not call the same endpoint twice. "
     "Be specific — include key numbers and statuses in your response."
 )
