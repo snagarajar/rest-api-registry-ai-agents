@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+from typing import Optional
 
 import boto3
 import requests
@@ -39,7 +40,7 @@ def query_registry(query: str) -> list:
         return [{"error": str(exc)}]
 
 
-def call_api(endpoint: str, params: dict | None = None) -> dict:
+def call_api(endpoint: str, params: Optional[dict] = None) -> dict:
     """Invoke a registered REST API endpoint."""
     logger.info("[tool] call_api: %s params=%s", endpoint, params)
     try:
@@ -94,19 +95,21 @@ def orchestrate(user_question: str) -> str:
 
         if stop_reason == "end_turn":
             for block in assistant_message["content"]:
-                if block.get("type") == "text":
+                if "text" in block:
                     return block["text"]
             return "No response generated."
 
         if stop_reason == "tool_use":
             tool_results = []
             for block in assistant_message["content"]:
-                if block.get("type") == "toolUse":
-                    tool_result_content = _execute_tool(block["name"], block["input"])
+                if "toolUse" in block:
+                    tool_use = block["toolUse"]
+                    tool_result_content = _execute_tool(tool_use["name"], tool_use["input"])
                     tool_results.append({
-                        "type": "toolResult",
-                        "toolUseId": block["toolUseId"],
-                        "content": tool_result_content,
+                        "toolResult": {
+                            "toolUseId": tool_use["toolUseId"],
+                            "content": [{"text": tool_result_content}],
+                        }
                     })
             messages.append({"role": "user", "content": tool_results})
         else:

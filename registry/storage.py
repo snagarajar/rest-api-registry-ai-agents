@@ -1,6 +1,6 @@
 """In-memory storage for the API Registry."""
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 from registry.models import APIRecord
 
 

@@ -2,13 +2,14 @@
 
 import logging
 import requests
+from typing import Optional
 
 REGISTRY_URL = "http://localhost:9000"
 
 logger = logging.getLogger(__name__)
 
 
-def auto_register(api_meta: dict) -> str | None:
+def auto_register(api_meta: dict) -> Optional[str]:
     """POST to the registry on startup. Returns assigned api_id or None on failure."""
     try:
         resp = requests.post(f"{REGISTRY_URL}/registry/register", json=api_meta, timeout=5)
