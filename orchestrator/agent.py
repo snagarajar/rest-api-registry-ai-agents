@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
 AWS_PROFILE = os.getenv("AWS_PROFILE")
-MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20251001-v1:0")
+MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-sonnet-4-5-20250929-v1:0")
 REGISTRY_URL = os.getenv("REGISTRY_URL", "http://localhost:9000")
 
 session = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION)
