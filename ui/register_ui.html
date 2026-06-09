@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Your API</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container register-container">
         <div class="header">
-            <h1>📋 Register Your API Skill</h1>
-            <p>Make your capability available to AI agents across the organisation</p>
+            <h1>📋 Register Your API</h1>
+            <p>Make your capability discoverable by AI agents across the organisation</p>
+            <nav class="nav-links">
+                <a href="/chat-ui">🤖 Ask Agent</a>
+                <a href="/registry-ui" class="active">📋 Register API</a>
+                <a href="/browse-ui">🔍 Browse Registry</a>
+            </nav>
         </div>
         <form id="register-form" class="register-form">
             <div class="form-group">
@@ -18,11 +24,11 @@
             </div>
             <div class="form-group">
                 <label>Description *</label>
-                <textarea name="description" placeholder="What does this API do?" required></textarea>
+                <textarea name="description" placeholder="What does this API do? Be descriptive — the AI uses this to discover your API." required></textarea>
             </div>
             <div class="form-group">
                 <label>Endpoint URL *</label>
-                <input type="text" name="endpoint" placeholder="http://localhost:8001/lims/workorder" required>
+                <input type="text" name="endpoint" placeholder="http://your-service/path" required>
             </div>
             <div class="form-group">
                 <label>HTTP Method</label>
@@ -31,8 +37,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Parameters (comma-separated)</label>
-                <input type="text" name="parameters" placeholder="id, product_name">
+                <label>Parameters <span style="font-weight:400;color:#888">(comma-separated)</span></label>
+                <input type="text" name="parameters" placeholder="e.g., id, product_name, date">
             </div>
             <div class="form-group">
                 <label>Owner Team *</label>
@@ -44,7 +50,7 @@
                     <option>none</option><option>api_key</option><option>oauth2</option><option>mTLS</option>
                 </select>
             </div>
-            <button type="submit">Register API</button>
+            <button type="submit">Register API →</button>
         </form>
         <div id="status-message" class="status-message"></div>
     </div>

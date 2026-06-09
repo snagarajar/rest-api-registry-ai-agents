@@ -95,14 +95,19 @@ def get_api(api_id: str):
 
 # ─── Chat / UI Endpoints ─────────────────────────────────────────────────────
 
+@app.get("/registry-ui")
+def registry_ui():
+    return FileResponse("ui/register_ui.html")
+
+
+@app.get("/browse-ui")
+def browse_ui():
+    return FileResponse("ui/browse_ui.html")
+
+
 @app.get("/chat-ui")
 def chat_ui():
     return FileResponse("ui/chat_ui.html")
-
-
-@app.get("/register-ui")
-def register_ui():
-    return FileResponse("ui/register_ui.html")
 
 
 @app.post("/chat")
