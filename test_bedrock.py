@@ -1,17 +1,22 @@
 """Quick test to verify AWS Bedrock connectivity before the hackathon."""
 
 import boto3
-import json
+import os
 import sys
+from dotenv import load_dotenv
 
-REGION = "us-west-2"
-MODEL_ID = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+load_dotenv()
+
+REGION   = os.getenv("AWS_REGION", "us-west-2")
+PROFILE  = os.getenv("AWS_PROFILE")
+MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20251001-v1:0")
 
 
 def test_bedrock():
-    print(f"Testing Bedrock connection (region={REGION}, model={MODEL_ID})...")
+    print(f"Testing Bedrock (region={REGION}, profile={PROFILE or 'default'}, model={MODEL_ID})...")
     try:
-        client = boto3.client("bedrock-runtime", region_name=REGION)
+        session = boto3.Session(profile_name=PROFILE, region_name=REGION)
+        client  = session.client("bedrock-runtime")
         response = client.converse(
             modelId=MODEL_ID,
             messages=[{"role": "user", "content": [{"text": "Say 'Bedrock OK' and nothing else."}]}],

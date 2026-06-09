@@ -16,10 +16,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
-MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20240620-v1:0")
+AWS_PROFILE = os.getenv("AWS_PROFILE")
+MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20251001-v1:0")
 REGISTRY_URL = os.getenv("REGISTRY_URL", "http://localhost:9000")
 
-bedrock = boto3.client("bedrock-runtime", region_name=AWS_REGION)
+session = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION)
+bedrock = session.client("bedrock-runtime")
 
 
 # ─── Tool Implementations ─────────────────────────────────────────────────────
