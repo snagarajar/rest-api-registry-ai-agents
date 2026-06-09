@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Registry Agent</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 API Registry Agent</h1>
+            <p>Ask me about work orders, inventory, quality checks, or any registered capability</p>
+        </div>
+        <div id="chat-box" class="chat-box">
+            <div class="message agent"><strong>Agent:</strong> Hello! I can query any registered API. Try asking: <em>"Can we fulfill work order WO-1234?"</em></div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Ask a question..." autofocus>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

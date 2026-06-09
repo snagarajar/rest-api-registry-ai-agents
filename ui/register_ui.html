@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Your API</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container register-container">
+        <div class="header">
+            <h1>📋 Register Your API Skill</h1>
+            <p>Make your capability available to AI agents across the organisation</p>
+        </div>
+        <form id="register-form" class="register-form">
+            <div class="form-group">
+                <label>API Name *</label>
+                <input type="text" name="name" placeholder="e.g., Get Work Order" required>
+            </div>
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea name="description" placeholder="What does this API do?" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Endpoint URL *</label>
+                <input type="text" name="endpoint" placeholder="http://localhost:8001/lims/workorder" required>
+            </div>
+            <div class="form-group">
+                <label>HTTP Method</label>
+                <select name="method">
+                    <option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Parameters (comma-separated)</label>
+                <input type="text" name="parameters" placeholder="id, product_name">
+            </div>
+            <div class="form-group">
+                <label>Owner Team *</label>
+                <input type="text" name="owner_team" placeholder="e.g., LIMS Team" required>
+            </div>
+            <div class="form-group">
+                <label>Auth Type</label>
+                <select name="auth_type">
+                    <option>none</option><option>api_key</option><option>oauth2</option><option>mTLS</option>
+                </select>
+            </div>
+            <button type="submit">Register API</button>
+        </form>
+        <div id="status-message" class="status-message"></div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
