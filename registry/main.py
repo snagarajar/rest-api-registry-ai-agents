@@ -1,6 +1,7 @@
 """Central REST API Registry — FastAPI service on port 9000."""
 
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 
@@ -18,7 +19,8 @@ from registry.models import (
 )
 from registry.storage import APIRegistry
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "WARNING").upper()
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.WARNING), format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 app = FastAPI(

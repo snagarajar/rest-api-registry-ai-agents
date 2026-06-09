@@ -2,20 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Registry Agent</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🤖 API Registry Agent</h1>
-            <p>Ask me about work orders, inventory, quality checks, or any registered capability</p>
+            <p>Powered by Claude · Discovers and calls registered APIs autonomously</p>
         </div>
+
         <div id="chat-box" class="chat-box">
-            <div class="message agent"><strong>Agent:</strong> Hello! I can query any registered API. Try asking: <em>"Can we fulfill work order WO-1234?"</em></div>
+            <div class="message agent">
+                <div class="msg-label">Agent</div>
+                <div class="msg-body">Hello! I can query any registered API to answer your questions. Try one of the examples below, or ask your own.</div>
+            </div>
+            <div class="suggestions">
+                <button class="chip" onclick="ask('Can we fulfill work order WO-1234?')">Can we fulfill WO-1234?</button>
+                <button class="chip" onclick="ask('What is the status of assay run ASY-001?')">Status of assay ASY-001?</button>
+                <button class="chip" onclick="ask('Do we have enough BeadChip inventory?')">BeadChip inventory?</button>
+                <button class="chip" onclick="ask('What is the current fab capacity?')">Fab capacity?</button>
+                <button class="chip" onclick="ask('Is there any bottleneck between inventory and fab capacity right now?')">Any bottlenecks?</button>
+            </div>
         </div>
+
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Ask a question..." autofocus>
+            <input type="text" id="user-input" placeholder="Ask about work orders, inventory, assays, capacity…" autofocus>
             <button id="send-btn" onclick="sendMessage()">Send</button>
         </div>
     </div>

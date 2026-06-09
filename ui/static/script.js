@@ -1,16 +1,25 @@
 /* ── Chat UI ─────────────────────────────────────────── */
 
+function ask(question) {
+    document.getElementById("user-input").value = question;
+    sendMessage();
+}
+
 function sendMessage() {
     const input   = document.getElementById("user-input");
     const sendBtn = document.getElementById("send-btn");
     const message = input.value.trim();
     if (!message) return;
 
-    addMessage("You", message, "user");
+    // Hide suggestion chips after first real message
+    const suggestions = document.querySelector(".suggestions");
+    if (suggestions) suggestions.style.display = "none";
+
+    addUserMessage(message);
     input.value = "";
     sendBtn.disabled = true;
 
-    const loadingId = addMessage("Agent", "Thinking…", "loading");
+    const loadingId = addLoadingMessage();
 
     fetch("/chat", {
         method:  "POST",
@@ -20,22 +29,40 @@ function sendMessage() {
     .then(r => r.json())
     .then(data => {
         removeMessage(loadingId);
-        addMessage("Agent", data.answer || data.error, "agent");
+        addAgentMessage(data.answer || data.error || "No response.");
     })
     .catch(err => {
         removeMessage(loadingId);
-        addMessage("Agent", "Error: " + err.message, "agent");
+        addAgentMessage("⚠️ Error: " + err.message);
     })
     .finally(() => { sendBtn.disabled = false; input.focus(); });
 }
 
-function addMessage(sender, text, type) {
+function addUserMessage(text) {
     const chatBox = document.getElementById("chat-box");
-    const id      = "msg-" + Date.now();
-    const div     = document.createElement("div");
-    div.className = `message ${type}`;
-    div.id        = id;
-    div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+    const div = document.createElement("div");
+    div.className = "message user";
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function addAgentMessage(markdown) {
+    const chatBox = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = "message agent";
+    div.innerHTML = `<div class="msg-label">Agent</div><div class="msg-body">${marked.parse(markdown)}</div>`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function addLoadingMessage() {
+    const chatBox = document.getElementById("chat-box");
+    const id = "msg-loading-" + Date.now();
+    const div = document.createElement("div");
+    div.className = "message loading";
+    div.id = id;
+    div.innerHTML = `Thinking <span class="dots"><span></span><span></span><span></span></span>`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return id;
